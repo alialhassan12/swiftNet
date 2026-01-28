@@ -39,7 +39,7 @@ export default function Navbar(){
     }
 
     return(
-        <div className="sticky top-0 z-50 flex justify-between items-center h-20 px-10 bg-linear-to-b from-black/80 to-transparent">
+        <div className="sticky top-0 z-50 flex justify-between items-center h-20 px-10 bg-slate-950">
             <div className="flex justify-center items-center">
                 <img src="/src/assets/logo.png" className="w-20 h-20" />
                 <h1 className="text-2xl font-bold text-white tracking-wider">SwiftNet</h1>
@@ -47,10 +47,10 @@ export default function Navbar(){
             <div className="flex justify-center items-center gap-4">
                 <ul className="flex gap-8 text-white/90 font-medium">
                     <li><a href="/" className="hover:text-blue-400 transition-colors">Home</a></li>
-                    <li><a href="#" className="hover:text-blue-400 transition-colors">Plans</a></li>
+                    <li><a href="#plans" className="hover:text-blue-400 transition-colors">Plans</a></li>
                     <li><a href="#coverage-map" className="hover:text-blue-400 transition-colors">Coverage</a></li>
-                    <li><a href="#" className="hover:text-blue-400 transition-colors">About</a></li>
-                    <li><a href="#" className="hover:text-blue-400 transition-colors">Contact</a></li>
+                    <li><a href="#about" className="hover:text-blue-400 transition-colors">About</a></li>
+                    <li><a href="#contact" className="hover:text-blue-400 transition-colors">Contact</a></li>
                     <Dialog.Root>
                         <Dialog.Trigger>
                             <li className=""><Button variant="soft">Portal</Button></li>

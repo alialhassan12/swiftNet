@@ -28,8 +28,8 @@ html{
   font-weight: 400;
 
   color-scheme: light;
-  background-color: #f8fafc; /* Slate 50 */
-  color: #0f172a; /* Slate 900 */
+  background-color: #f8fafc; 
+  color: #020618;
 }
 
 body {
@@ -39,7 +39,7 @@ body {
 
 /* Manually toggle dark mode using the 'dark' class on the HTML element */
 :root.dark {
-  background-color: #122437;
+  background-color: #020618;
   color: #f8fafc;
   color-scheme: dark;
 }
