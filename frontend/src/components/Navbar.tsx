@@ -62,23 +62,23 @@ export default function Navbar(){
                             </Dialog.Description>
 
                             <Flex direction="column" gap="3">
-                                <label>
-                                    <Text as="div" size="2" mb="1" weight="bold">
-                                        Email
-                                    </Text>
-                                    <TextField.Root
-                                        color={errors.email===""?"blue":"red"}
-                                        style={{
-                                            border:errors.email===""?"":"1px solid red",
-                                        }}
-                                        name="email"
-                                        type="email"
-                                        placeholder="Enter your email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                    />
-                                    <span className="text-red-600 text-xs">{errors.email}</span>
-                                </label>
+                                    <label>
+                                        <Text as="div" size="2" mb="1" weight="bold">
+                                            Email
+                                        </Text>
+                                        <TextField.Root
+                                            color={errors.email===""?"blue":"red"}
+                                            style={{
+                                                border:errors.email===""?"":"1px solid red",
+                                            }}
+                                            name="email"
+                                            type="email"
+                                            placeholder="Enter your email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                        />
+                                        <span className="text-red-600 text-xs">{errors.email}</span>
+                                    </label>
                                 <label>
                                     <Text as="div" size="2" mb="1" weight="bold">
                                         Password

@@ -1,10 +1,18 @@
-import { Button } from "@radix-ui/themes";
+import { Button, Dialog, Text, TextArea, TextField } from "@radix-ui/themes";
 import CoverageMap from "../components/CoverageMap";
 import Navbar from "../components/Navbar";
+import { Mail, PersonStandingIcon, Send, SendHorizonal, User } from "lucide-react";
+import Footer from "../components/Footer";
+import RequestForm from "../components/RequestForm";
+import { Alert, Slide, Snackbar } from "@mui/material";
+import { useState } from "react";
 
 export default function HomePage(){
+    const [openPlan,setOpenPlan]=useState<string | null>(null);
+    const[openSnackBar,setOpenSnackBar]=useState<boolean>(false);
+
     return(
-        <>
+        <div className="bg-slate-950">
             <Navbar />
             {/* Hero Section */}
             <div data-aos="fade-up" className="relative min-h-screen">
@@ -41,8 +49,6 @@ export default function HomePage(){
             </div>
             {/* Coverage Map section*/}
             <section id="coverage-map" className="relative py-24 px-4 overflow-hidden">
-                <div className="absolute inset-0 bg-slate-950 -z-10" />
-                
                 <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
                     
                     {/* Text Content */}
@@ -87,7 +93,7 @@ export default function HomePage(){
                     {/* Map Visual */}
                     <div data-aos="fade-left" className="relative group">
                         <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-purple-600 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-                        <div className="relative bg-slate-900 rounded-2xl p-2 border border-white/10">
+                        <div className="relative rounded-2xl p-2 border border-white/10">
                             <CoverageMap className="h-[400px] md:h-[500px]" />
                             
                             {/* Floating Card */}
@@ -109,7 +115,7 @@ export default function HomePage(){
                 </div>
             </section>
             {/* Plans Section */}
-            <div id="plans"  className=" px-4 bg-slate-950">
+            <div id="plans"  className=" px-4">
                 {/* Text */}
                 <div data-aos="fade-up" className="space-y-5">
                     <div className="inline-block">
@@ -117,11 +123,11 @@ export default function HomePage(){
                             Featured Internet Plans
                         </span>
                     </div>
-                    <div className="text-2xl md:text-xl font-bold text-white  ">
-                        Choose the speed that fits your life style
+                    <div className="text-4xl md:text-5xl font-bold text-white leading-tight">
+                        Choose the speed that<br />
+                        <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-600">fits your life style</span>
                     </div>
                 </div>
-                {/* cards */}
                 {/* cards */}
                 <div data-aos="fade-up" className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-7xl mx-auto">
                     
@@ -147,7 +153,12 @@ export default function HomePage(){
                                 </div>
                             ))}
                         </div>
-                        <Button variant="outline" size={"4"} className="w-full cursor-pointer hover:bg-white/5 transition-colors! border-white/20! text-white!">Choose Starter</Button>
+                        <Dialog.Root open={openPlan === "Basic"} onOpenChange={(open)=>setOpenPlan(open ? "Basic" : null)}>
+                            <Dialog.Trigger>
+                                <Button variant="outline" size={"4"} className="w-full cursor-pointer hover:bg-white/5 transition-colors! border-white/20! text-white!">Choose Starter</Button>
+                            </Dialog.Trigger>
+                            <RequestForm plan="Basic" setOpenSnackBar={()=>setOpenSnackBar(true)} onSuccess={()=>setOpenPlan(null)}/>
+                        </Dialog.Root>
                     </div>
 
                     {/* Pro Plan (Highlighted) */}
@@ -176,7 +187,12 @@ export default function HomePage(){
                                 </div>
                             ))}
                         </div>
-                        <Button size={"4"} className="w-full cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white border-0 shadow-lg shadow-blue-600/30 font-bold tracking-wide">Subscribe Now</Button>
+                        <Dialog.Root open={openPlan === "Pro"} onOpenChange={(open)=>setOpenPlan(open ? "Pro" : null)}>
+                            <Dialog.Trigger>
+                                <Button size={"4"} className="w-full cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white border-0 shadow-lg shadow-blue-600/30 font-bold tracking-wide">Subscribe Now</Button>
+                            </Dialog.Trigger>
+                            <RequestForm plan="Pro" setOpenSnackBar={()=>setOpenSnackBar(true)} onSuccess={()=>setOpenPlan(null)}/>
+                        </Dialog.Root>
                     </div>
 
                      {/* Gamer Plan */}
@@ -201,10 +217,81 @@ export default function HomePage(){
                                 </div>
                             ))}
                         </div>
-                         <Button variant="outline" size={"4"} className="w-full cursor-pointer hover:bg-white/5 transition-colors! border-white/20! text-white!">Go Elite</Button>
+                        <Dialog.Root open={openPlan === "Gamer"} onOpenChange={(open)=>setOpenPlan(open ? "Gamer" : null)}>
+                            <Dialog.Trigger>
+                                <Button variant="outline" size={"4"} className="w-full cursor-pointer hover:bg-white/5 transition-colors! border-white/20! text-white!">Go Elite</Button>
+                            </Dialog.Trigger>
+                            <RequestForm plan="Gamer" onSuccess={()=>setOpenPlan(null)} setOpenSnackBar={()=>setOpenSnackBar(true)}/>
+                        </Dialog.Root>
+                        
                     </div>
                 </div>
             </div>
-        </>
+            {/* contact section */}
+            <div id="contact" className="px-4 py-24">
+                <div data-aos="fade-up" className="space-y-5">
+                    <div className="inline-block">
+                        <span className="text-blue-500 font-bold tracking-wider uppercase text-sm bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20">
+                            Get in Touch
+                        </span>
+                    </div>
+                    <div className="text-4xl md:text-5xl font-bold text-white leading-tight">
+                        Have a Question or need technical support?<br />
+                        <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-600">Our team is here to help</span>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                        <label>
+                            <Text as="div" size="2" mb="1" weight="bold">
+                                FullName
+                            </Text>
+                            <TextField.Root
+                                name="fullname"
+                                type="text"
+                                placeholder="Enter your Name"
+                            >
+                                <TextField.Slot><User size={"16"}/></TextField.Slot>
+                            </TextField.Root>
+                        </label>
+                        <label>
+                            <Text as="div" size="2" mb="1" weight="bold">
+                                Email
+                            </Text>
+                            <TextField.Root
+                                name="email"
+                                type="email"
+                                placeholder="Enter your Email"
+                            >
+                                <TextField.Slot><Mail size={"16"}/></TextField.Slot>
+                            </TextField.Root>
+                        </label>
+                        <label>
+                            <Text as="div" size="2" mb="1" weight="bold">
+                                Your Message
+                            </Text>
+                            <TextArea placeholder="How Can we Help You?" size={"3"} />
+                        </label>
+                        <Button size={"3"}>Send Message<Send size={"20"}/></Button>
+                    </div>
+                </div>
+            </div>
+            <Snackbar 
+                open={openSnackBar} 
+                autoHideDuration={6000} 
+                onClose={()=>setOpenSnackBar(false)}
+                anchorOrigin={{vertical:"bottom",horizontal:"right"}}
+                slots={{transition:Slide}}
+                >
+                <Alert
+                    onClose={()=>setOpenSnackBar(false)}
+                    severity="success"
+
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    Your request has been submitted successfully! Wait admin approval
+                </Alert>
+            </Snackbar>
+            <Footer/>
+        </div>
     );
 }
