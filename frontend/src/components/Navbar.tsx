@@ -1,14 +1,20 @@
-import { Button, Dialog, Flex, Text, TextField } from "@radix-ui/themes";
+import { Button, Dialog, Flex, Spinner, Text, TextField } from "@radix-ui/themes";
 import { useState } from "react";
-interface LoginForm{
+import { useAuthStore } from "../store/authStore";
+import { Link, useNavigate } from "react-router-dom";
+
+type LoginForm={
     email:string,
     password:string,
 }
-interface ErrorForm{
+type ErrorForm={
     email:string,
     password:string,
 }
 export default function Navbar(){
+    const {adminLogin,loggingIn,authUser}=useAuthStore();
+    const [openPortalDialog,setOpenPortalDialog]=useState<boolean>(false);
+    const navigate = useNavigate();
     const [formData,setFormdata]=useState<LoginForm>({
         email:"",
         password:""
@@ -20,7 +26,7 @@ export default function Navbar(){
     const handleChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
         setFormdata({...formData,[e.target.name]:e.target.value});
     }
-    const handleSubmitLogin=(formData:LoginForm)=>{
+    const handleSubmitLogin= async (formData:LoginForm)=>{
         if(formData.email==="" || formData.password===""){
             setErrors({email:"email cant be empty",password:"password cant be empty"});
             return;
@@ -35,7 +41,16 @@ export default function Navbar(){
             return;
         }
         setErrors({email:"",password:""});
-        console.log(formData);
+        const success = await adminLogin(formData);
+        if(success) navigate("/adminDashboard");
+    }
+    
+    const handlePortalClick=()=>{
+        if(authUser){
+            navigate('/adminDashboard');
+        }else{
+            setOpenPortalDialog(true);
+        }
     }
 
     return(
@@ -45,16 +60,14 @@ export default function Navbar(){
                 <h1 className="text-2xl font-bold text-white tracking-wider">SwiftNet</h1>
             </div>
             <div className="flex justify-center items-center gap-4">
-                <ul className="flex gap-8 text-white/90 font-medium">
-                    <li><a href="/" className="hover:text-blue-400 transition-colors">Home</a></li>
+                <ul className="flex gap-8 text-white/90 font-medium items-center">
+                    <li><Link to="/" className="hover:text-blue-400 transition-colors">Home</Link></li>
                     <li><a href="#plans" className="hover:text-blue-400 transition-colors">Plans</a></li>
                     <li><a href="#coverage-map" className="hover:text-blue-400 transition-colors">Coverage</a></li>
                     <li><a href="#about" className="hover:text-blue-400 transition-colors">About</a></li>
                     <li><a href="#contact" className="hover:text-blue-400 transition-colors">Contact</a></li>
-                    <Dialog.Root>
-                        <Dialog.Trigger>
-                            <li className=""><Button variant="soft">Portal</Button></li>
-                        </Dialog.Trigger>
+                    <li className=""><Button onClick={handlePortalClick} variant="soft" className="cursor-pointer">Portal</Button></li>
+                    <Dialog.Root open={openPortalDialog}>
                         <Dialog.Content maxWidth="450px">
                             <Dialog.Title>Log In</Dialog.Title>
                             <Dialog.Description size="2" mb="4">
@@ -99,12 +112,13 @@ export default function Navbar(){
                             </Flex>
 
                             <Flex gap="3" mt="4" justify="end">
-                                <Dialog.Close>
-                                    <Button variant="soft" color="gray">
+                                    <Button variant="soft" color="gray" onClick={()=>setOpenPortalDialog(false)}>
                                         Cancel
                                     </Button>
-                                </Dialog.Close>
-                                <Button onClick={()=>handleSubmitLogin(formData)}>Login</Button>
+
+                                <Button disabled={loggingIn} onClick={()=>handleSubmitLogin(formData)}>
+                                    {loggingIn?<Spinner/>:"Login"}
+                                </Button>
                             </Flex>
                         </Dialog.Content>
                     </Dialog.Root>

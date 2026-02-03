@@ -12,7 +12,7 @@ export default function HomePage(){
     const[openSnackBar,setOpenSnackBar]=useState<boolean>(false);
 
     return(
-        <div className="bg-slate-950">
+        <div className="bg-slate-950">  
             <Navbar />
             {/* Hero Section */}
             <div data-aos="fade-up" className="relative min-h-screen">
