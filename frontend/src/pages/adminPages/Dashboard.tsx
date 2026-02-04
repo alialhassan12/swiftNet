@@ -4,7 +4,7 @@ import { useAuthStore } from "../../store/authStore"
 const Dashboard = () => {
     const {authUser}=useAuthStore();
     return (
-        <>
+        <div data-aos="fade-up">
             {/* Header for mobile */}
             <header className="flex h-16 shrink-0 items-center gap-2 border-b border-slate-800 px-4 md:hidden">
                 <SidebarTrigger className="text-white hover:text-blue-400 transition-colors" />
@@ -28,7 +28,7 @@ const Dashboard = () => {
                     </div>
                 </div>
             </main>
-        </>
+        </div>
     );
 };
 export default Dashboard;

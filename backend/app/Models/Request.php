@@ -26,7 +26,4 @@ class Request extends Model
     protected $attributes = [
         'status' => 'pending',
     ];
-    protected $appends = [
-        'status',
-    ];
 }

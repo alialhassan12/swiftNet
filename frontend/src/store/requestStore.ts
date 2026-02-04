@@ -11,7 +11,7 @@ type requestForm={
     plan:string,
 }
 
-type Request ={
+export type Request ={
     id:number,
     name:string,
     email:string,
@@ -19,18 +19,31 @@ type Request ={
     phone:string
     address:string,
     plan:string,
-    status:string
+    status:string,
+    created_at:string,
+    updated_at:string
+}
+type RequestPagination={
+    'data':Request[],
+    'current_page':number,
+    'last_page':number,
+    'per_page':number,
+    'total':number
 }
 
 interface RequestState{
+    requests:RequestPagination | null,
     newRequest:Request | null,
-    createRequest:(formData:requestForm)=>Promise<Boolean>
-    creatingRequest:boolean
+    creatingRequest:boolean,
+    pageNumber:number,
+    createRequest:(formData:requestForm)=>Promise<Boolean>,
+    getRequests:(page:number)=>Promise<Boolean>
 }
 
 export const useRequestStore=create<RequestState>((set)=>({
     newRequest:null,
     creatingRequest:false,
+    requests:null,
     createRequest:async(formData:requestForm)=>{
         set({creatingRequest:true})
         try {
@@ -41,6 +54,17 @@ export const useRequestStore=create<RequestState>((set)=>({
             return false;
         }finally{  
             set({creatingRequest:false});
+        }
+    },
+    pageNumber:1,
+    getRequests:async(page:number=1)=>{
+        try {
+            const response =await axiosInstance.get(`/admin/requests?page=${page}`);
+            set({requests:response.data.requests});
+            return true;
+        } catch (error:any) {
+            toast.error(error?.response?.data?.message);
+            return false;
         }
     }
 }));

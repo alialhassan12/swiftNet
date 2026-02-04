@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -38,5 +39,19 @@ class requestController extends Controller
             'status' => true,
             'message' => 'Request sent successfully wait admin Approval'
         ]);
+    }
+    public function getRequests(){
+        try{
+            $requests=\App\Models\Request::paginate(4);
+            return response()->json([
+                'requests'=>$requests
+            ]);
+        }
+        catch(Exception $e){
+            return response()->json([
+                'status'=>false,
+                'message'=>'Something went wrong'.$e->getMessage()
+            ]);
+        }
     }
 }

@@ -10,52 +10,21 @@ import {
     Eye,
     ArrowUpRight
 } from "lucide-react";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+    SelectGroup,
+    SelectLabel
+} from "@/components/ui/select";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-// Dummy data for the design
-const requests = [
-    {
-        id: "REQ-001",
-        name: "John Doe",
-        email: "john@example.com",
-        phone: "+1 234 567 890",
-        plan: "Premium Fiber",
-        status: "pending",
-        date: "2024-02-03",
-        address: "123 Main St, New York"
-    },
-    {
-        id: "REQ-002",
-        name: "Alice Smith",
-        email: "alice@world.com",
-        phone: "+1 987 654 321",
-        plan: "Standard Docsis",
-        status: "approved",
-        date: "2024-02-02",
-        address: "456 Oak Ave, Los Angeles"
-    },
-    {
-        id: "REQ-003",
-        name: "Robert Brown",
-        email: "bob@tech.io",
-        phone: "+1 555 012 3456",
-        plan: "Business Ultra",
-        status: "rejected",
-        date: "2024-02-01",
-        address: "789 Pine Rd, Chicago"
-    },
-    {
-        id: "REQ-004",
-        name: "Emily White",
-        email: "emily@gmail.com",
-        phone: "+1 444 222 3333",
-        plan: "Home Starter",
-        status: "pending",
-        date: "2024-01-31",
-        address: "321 Elm St, Miami"
-    }
-];
+import { useEffect, useState } from "react";
+import { useRequestStore,type Request } from "@/store/requestStore";
+import RequestDialog from "@/components/adminComponents/RequestDialog";
 
 const StatusBadge = ({ status }: { status: string }) => {
     const styles = {
@@ -79,8 +48,22 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 const Requests = () => {
+    const {getRequests,requests,pageNumber}=useRequestStore();
+    const [status,setStatus]=useState<string>('all');
+    const [openRequestDialog,setOpenRequestDialog]=useState<boolean>(false);
+    const [selectedRequest,setSelectedRequest]=useState<Request | null>(null);
+    useEffect(()=>{
+        getRequests(pageNumber);
+    },[pageNumber]);
+    const nextPage=()=>{
+        getRequests(pageNumber+1);
+    }
+    const prevPage=()=>{
+        getRequests(pageNumber-1);
+    }
+
     return (
-        <div className="flex flex-col h-full">
+        <div data-aos="fade-up" className="flex flex-col h-full">
             {/* Header for mobile */}
             <header className="flex h-16 shrink-0 items-center gap-2 border-b border-slate-800 px-4 md:hidden">
                 <SidebarTrigger className="text-white hover:text-blue-400 transition-colors" />
@@ -109,9 +92,9 @@ const Requests = () => {
                     {/* Stats Overview */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {[
-                            { label: "Total Requests", value: "128", icon: ClipboardList, color: "text-blue-400", bg: "bg-blue-400/10" },
-                            { label: "Pending", value: "45", icon: Clock, color: "text-amber-400", bg: "bg-amber-400/10" },
-                            { label: "Approved Today", value: "12", icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-400/10" },
+                            { label: "Total Requests", value: requests?.total, icon: ClipboardList, color: "text-blue-400", bg: "bg-blue-400/10" },
+                            { label: "Pending", value: requests?.data.filter((req)=>req.status==='pending').length, icon: Clock, color: "text-amber-400", bg: "bg-amber-400/10" },
+                            { label: "Approved ", value: requests?.data.filter((req)=>req.status==='approved').length, icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-400/10" },
                             { label: "Completion Rate", value: "84%", icon: ArrowUpRight, color: "text-purple-400", bg: "bg-purple-400/10" },
                         ].map((stat, i) => (
                             <div key={i} className="p-4 rounded-xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm">
@@ -138,12 +121,23 @@ const Requests = () => {
                                 />
                             </div>
                             <div className="flex gap-2">
-                                <select className="bg-slate-950 border border-slate-800 text-slate-300 text-sm rounded-md px-3 py-1.5 focus:outline-none focus:border-slate-700">
-                                    <option>All Status</option>
-                                    <option>Pending</option>
-                                    <option>Approved</option>
-                                    <option>Rejected</option>
-                                </select>
+                                <Select value={status} onValueChange={(value)=>{
+                                    setStatus(value);
+                                    getRequests(1);
+                                }}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select a status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>Status</SelectLabel>
+                                            <SelectItem value="all">All</SelectItem>
+                                            <SelectItem value="pending">Pending</SelectItem>
+                                            <SelectItem value="approved">Approved</SelectItem>
+                                            <SelectItem value="rejected">Rejected</SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
 
@@ -161,7 +155,7 @@ const Requests = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/50">
-                                    {requests.map((req) => (
+                                    {requests?.data.filter((req)=>status==='all'?true:req.status===status).map((req) => (
                                         <tr key={req.id} className="hover:bg-slate-800/30 transition-colors group">
                                             <td className="px-6 py-4">
                                                 <span className="text-xs font-mono text-slate-500">#{req.id}</span>
@@ -176,14 +170,18 @@ const Requests = () => {
                                                 <span className="text-sm text-slate-300">{req.plan}</span>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="text-sm text-slate-400">{req.date}</span>
+                                                <span className="text-sm text-slate-400">{new Date(req.created_at).toLocaleDateString() }</span>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <StatusBadge status={req.status} />
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10">
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10"
+                                                        onClick={()=>{
+                                                            setSelectedRequest(req);
+                                                            setOpenRequestDialog(true);
+                                                        }}>
                                                         <Eye className="w-4 h-4" />
                                                     </Button>
                                                     <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700">
@@ -199,15 +197,28 @@ const Requests = () => {
 
                         {/* Pagination Footer */}
                         <div className="px-6 py-4 border-t border-slate-800 bg-slate-900/60 flex items-center justify-between">
-                            <span className="text-sm text-slate-500">Showing 1 to 4 of 128 entries</span>
+                            <span className="text-sm text-slate-500">Showing {requests?.current_page} to {requests?.last_page} of {requests?.total} entries</span>
                             <div className="flex gap-2">
-                                <Button variant="outline" size="sm" className="border-slate-800 bg-slate-950 text-slate-400 disabled:opacity-50" disabled>Previous</Button>
-                                <Button variant="outline" size="sm" className="border-slate-800 bg-slate-950 text-slate-400">Next</Button>
+                                <Button variant="outline"
+                                        size="sm"
+                                        className="border-slate-800 bg-slate-950 text-slate-400 disabled:opacity-50"
+                                        onClick={prevPage}
+                                        disabled={requests?.current_page===1}>
+                                            Previous
+                                </Button>
+                                <Button variant="outline"
+                                        size="sm"
+                                        className="border-slate-800 bg-slate-950 text-slate-400"
+                                        onClick={nextPage}
+                                        disabled={requests?.current_page===requests?.last_page}>
+                                            Next
+                                </Button>
                             </div>
                         </div>
                     </div>
                 </div>
             </main>
+            <RequestDialog request={selectedRequest} open={openRequestDialog} setOpen={setOpenRequestDialog}></RequestDialog>
         </div>
     );
 };
