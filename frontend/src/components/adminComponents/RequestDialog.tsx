@@ -7,7 +7,7 @@ import {
     DialogHeader, 
     DialogTitle 
 } from "@/components/ui/dialog";
-import type { Request } from "@/store/requestStore";
+import { useRequestStore, type Request } from "@/store/requestStore";
 import { 
     User, 
     Mail, 
@@ -38,6 +38,7 @@ const InfoRow = ({ icon: Icon, label, value }: { icon: any, label: string, value
 );
 
 const RequestDialog = ({ request, open, setOpen }: RequestDialogProps) => {
+    const {rejectRequest,approveRequest}=useRequestStore();
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[500px] bg-slate-950 border-slate-800 p-0 overflow-hidden">
@@ -72,7 +73,7 @@ const RequestDialog = ({ request, open, setOpen }: RequestDialogProps) => {
                         <InfoRow icon={User} label="Customer Name" value={request?.name} />
                         <InfoRow icon={Mail} label="Email Address" value={request?.email} />
                         <InfoRow icon={Phone} label="Phone Number" value={request?.phone} />
-                        <InfoRow icon={Package} label="Service Plan" value={request?.plan} />
+                        <InfoRow icon={Package} label="Service Plan" value={request?.plan.name} />
                         <div className="md:col-span-2">
                             <InfoRow icon={MapPin} label="Installation Address" value={request?.address} />
                         </div>
@@ -98,13 +99,13 @@ const RequestDialog = ({ request, open, setOpen }: RequestDialogProps) => {
                     <div className="flex gap-2 ml-auto">
                         <Button 
                             className="bg-rose-600 hover:bg-rose-500 text-white flex items-center gap-2"
-                        >
+                            onClick={()=>rejectRequest(request?.id as number)}>
                             <XCircle className="w-4 h-4" />
                             Reject
                         </Button>
                         <Button 
                             className="bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-2"
-                        >
+                            onClick={()=>approveRequest(request?.id as number)}>
                             <CheckCircle2 className="w-4 h-4" />
                             Approve
                         </Button>

@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Dashboard from "./adminPages/Dashboard";
 import AdminSideBar from "@/components/adminComponents/AdminSideBar";
 import Requests from "./adminPages/Requests";
+import Plans from "./adminPages/Plans";
 
 const AdminDashboard = () => {
     return (
@@ -13,6 +14,7 @@ const AdminDashboard = () => {
                     <Routes>
                         <Route index element={<Dashboard />} />
                         <Route path="requests" element={<Requests />} />
+                        <Route path="plans" element={<Plans />}/>
                     </Routes>
                 </SidebarInset>
             </div>

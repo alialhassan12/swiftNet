@@ -6,10 +6,17 @@ import Footer from "../components/Footer";
 import RequestForm from "../components/RequestForm";
 import { Alert, Slide, Snackbar } from "@mui/material";
 import { useState } from "react";
+import { usePlanStore } from "../store/planStore";
+import { useEffect } from "react";
 
 export default function HomePage(){
     const [openPlan,setOpenPlan]=useState<string | null>(null);
     const[openSnackBar,setOpenSnackBar]=useState<boolean>(false);
+    const {plans,getPlans}=usePlanStore();
+
+    useEffect(() => {
+        getPlans();
+    }, []);
 
     return(
         <div className="bg-slate-950">  
@@ -130,101 +137,36 @@ export default function HomePage(){
                 </div>
                 {/* cards */}
                 <div data-aos="fade-up" className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-7xl mx-auto">
-                    
-                    {/* Basic Plan */}
-                    <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 p-8 rounded-3xl hover:border-blue-500/30 transition duration-300 flex flex-col relative group overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-16 -mt-16 transition group-hover:bg-blue-500/20"></div>
-                        <h3 className="text-xl font-medium text-gray-300 mb-2">Starter</h3>
-                        <div className="flex items-baseline gap-1 mb-6">
-                            <span className="text-4xl font-bold text-white">$25</span>
-                            <span className="text-gray-500">/mo</span>
-                        </div>
-                        <p className="text-gray-400 text-sm mb-8 leading-relaxed">
-                            Perfect for students and light browsing.
-                        </p>
-                        
-                        <div className="space-y-4 mb-8 flex-1">
-                            {["50 Mbps Speed", "Unlimited Data", "Basic Support", "Free Router"].map((feature, i) => (
-                                <div key={i} className="flex items-center gap-3 text-gray-300 text-sm">
-                                    <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
-                                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
-                                    </div>
-                                    {feature}
+                    {plans.map((plan)=>(
+                        <div key={plan.id} className="bg-slate-900/50 backdrop-blur-sm border border-white/10 p-8 rounded-3xl hover:border-blue-500/30 transition duration-300 flex flex-col relative group overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-16 -mt-16 transition group-hover:bg-blue-500/20"></div>
+                                <h3 className="text-xl font-medium text-gray-300 mb-2">{plan.name}</h3>
+                                <div className="flex items-baseline gap-1 mb-6">
+                                    <span className="text-4xl font-bold text-white">${plan.price}</span>
+                                    <span className="text-gray-500">/mo</span>
                                 </div>
-                            ))}
-                        </div>
-                        <Dialog.Root open={openPlan === "Basic"} onOpenChange={(open)=>setOpenPlan(open ? "Basic" : null)}>
-                            <Dialog.Trigger>
-                                <Button variant="outline" size={"4"} className="w-full cursor-pointer hover:bg-white/5 transition-colors! border-white/20! text-white!">Choose Starter</Button>
-                            </Dialog.Trigger>
-                            <RequestForm plan="Basic" setOpenSnackBar={()=>setOpenSnackBar(true)} onSuccess={()=>setOpenPlan(null)}/>
-                        </Dialog.Root>
-                    </div>
-
-                    {/* Pro Plan (Highlighted) */}
-                    <div className="bg-linear-to-b from-blue-600/10 to-purple-600/10 border border-blue-500/50 p-8 rounded-3xl relative flex flex-col shadow-2xl shadow-blue-900/20 transform md:-translate-y-4">
-                        <div className="absolute top-0 inset-x-0 h-[1px] bg-linear-to-r from-transparent via-blue-400 to-transparent opacity-50"></div>
-                        <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
-                            Most Popular
-                        </div>
-                        
-                        <h3 className="text-xl font-medium text-blue-300 mb-2">Streamer Pro</h3>
-                        <div className="flex items-baseline gap-1 mb-6">
-                            <span className="text-5xl font-bold text-white">$45</span>
-                            <span className="text-gray-400">/mo</span>
-                        </div>
-                        <p className="text-gray-300 text-sm mb-8 leading-relaxed">
-                            Ideal for 4K streaming and multi-device homes.
-                        </p>
-
-                        <div className="space-y-4 mb-8 flex-1">
-                            {["500 Mbps Speed", "Unlimited Data", "Priority Support", "Free WiFi 6 Router", "No Setup Fee"].map((feature, i) => (
-                                <div key={i} className="flex items-center gap-3 text-white text-sm font-medium">
-                                    <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/40">
-                                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
-                                    </div>
-                                    {feature}
+                                <p className="text-gray-400 text-sm mb-8 leading-relaxed">
+                                    {plan.description}
+                                </p>
+                            
+                                <div className="space-y-4 mb-8 flex-1">
+                                    {[plan.speed,plan.data,"Basic Support", "Free Router"].map((feature, i) => (
+                                        <div key={i} className="flex items-center gap-3 text-gray-300 text-sm">
+                                            <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                                            </div>
+                                            {feature}
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                                <Dialog.Root open={openPlan === plan.name} onOpenChange={(open)=>setOpenPlan(open ? plan.name : null)}>
+                                    <Dialog.Trigger>
+                                        <Button variant="outline" size={"4"} className="w-full cursor-pointer hover:bg-white/5 transition-colors! border-white/20! text-white!">Choose {plan.name}</Button>
+                                    </Dialog.Trigger>
+                                    <RequestForm plan={plan} setOpenSnackBar={()=>setOpenSnackBar(true)} onSuccess={()=>setOpenPlan(null)}/>
+                                </Dialog.Root>
                         </div>
-                        <Dialog.Root open={openPlan === "Pro"} onOpenChange={(open)=>setOpenPlan(open ? "Pro" : null)}>
-                            <Dialog.Trigger>
-                                <Button size={"4"} className="w-full cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white border-0 shadow-lg shadow-blue-600/30 font-bold tracking-wide">Subscribe Now</Button>
-                            </Dialog.Trigger>
-                            <RequestForm plan="Pro" setOpenSnackBar={()=>setOpenSnackBar(true)} onSuccess={()=>setOpenPlan(null)}/>
-                        </Dialog.Root>
-                    </div>
-
-                     {/* Gamer Plan */}
-                    <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 p-8 rounded-3xl hover:border-purple-500/30 transition duration-300 flex flex-col relative group overflow-hidden">
-                        <div className="absolute top-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl -ml-16 -mt-16 transition group-hover:bg-purple-500/20"></div>
-                        <h3 className="text-xl font-medium text-gray-300 mb-2">Gamer Elite</h3>
-                        <div className="flex items-baseline gap-1 mb-6">
-                            <span className="text-4xl font-bold text-white">$70</span>
-                            <span className="text-gray-500">/mo</span>
-                        </div>
-                        <p className="text-gray-400 text-sm mb-8 leading-relaxed">
-                            Ultra-low latency for competitive gaming.
-                        </p>
-                        
-                        <div className="space-y-4 mb-8 flex-1">
-                            {["1 Gbps Speed", "Unlimited Data", "24/7 Dedicated Support", "Gaming Router", "Static IP"].map((feature, i) => (
-                                <div key={i} className="flex items-center gap-3 text-gray-300 text-sm">
-                                    <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
-                                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
-                                    </div>
-                                    {feature}
-                                </div>
-                            ))}
-                        </div>
-                        <Dialog.Root open={openPlan === "Gamer"} onOpenChange={(open)=>setOpenPlan(open ? "Gamer" : null)}>
-                            <Dialog.Trigger>
-                                <Button variant="outline" size={"4"} className="w-full cursor-pointer hover:bg-white/5 transition-colors! border-white/20! text-white!">Go Elite</Button>
-                            </Dialog.Trigger>
-                            <RequestForm plan="Gamer" onSuccess={()=>setOpenPlan(null)} setOpenSnackBar={()=>setOpenSnackBar(true)}/>
-                        </Dialog.Root>
-                        
-                    </div>
+                    ))}
                 </div>
             </div>
             {/* contact section */}

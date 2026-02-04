@@ -167,7 +167,7 @@ const Requests = () => {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="text-sm text-slate-300">{req.plan}</span>
+                                                <span className="text-sm text-slate-300">{req.plan.name}</span>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className="text-sm text-slate-400">{new Date(req.created_at).toLocaleDateString() }</span>

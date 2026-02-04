@@ -12,7 +12,7 @@ class Request extends Model
         'phone',
         'password',
         'address',
-        'plan',
+        'plan_id',
         'status'
     ];
 
@@ -26,4 +26,8 @@ class Request extends Model
     protected $attributes = [
         'status' => 'pending',
     ];
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class);
+    }
 }

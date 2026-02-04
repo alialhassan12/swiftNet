@@ -1,9 +1,10 @@
 import { Button, Dialog, Flex, Spinner, Text, TextField } from "@radix-ui/themes";
 import { useRequestStore } from "../store/requestStore";
 import React, { useState } from "react";
+import type { Plan } from "@/store/planStore";
 
 type requestFormProps={
-    plan:string,
+    plan:Plan,
     onSuccess?:()=>void,
     setOpenSnackBar:()=>void
 }
@@ -13,7 +14,7 @@ type requestForm={
     password:string,
     phone:string
     address:string,
-    plan:string,
+    plan_id:number,
 }
 
 export default function RequestForm({plan,onSuccess,setOpenSnackBar}:requestFormProps){
@@ -23,7 +24,7 @@ export default function RequestForm({plan,onSuccess,setOpenSnackBar}:requestForm
         password:"",
         phone:"",
         address:"",
-        plan:plan,
+        plan_id: plan.id!,
     });
     const {createRequest,creatingRequest}=useRequestStore();
 
@@ -34,7 +35,7 @@ export default function RequestForm({plan,onSuccess,setOpenSnackBar}:requestForm
         e.preventDefault();
         const success = await createRequest(formData);
         if(success){
-            setFormData({name:"",email:"",password:"",phone:"",address:"",plan:plan});
+            setFormData({ name: "", email: "", password: "", phone: "", address: "", plan_id: plan.id! });
             if(onSuccess) onSuccess();
             setOpenSnackBar();
         }
@@ -44,10 +45,10 @@ export default function RequestForm({plan,onSuccess,setOpenSnackBar}:requestForm
         <Dialog.Content>
             <form onSubmit={handleSubmit}>
                 <Dialog.Title>
-                Subscribe to {plan}
+                Subscribe to {plan.name}
             </Dialog.Title>
             <Dialog.Description>
-                Fill the form to subscribe to {plan}
+                Fill the form to subscribe to {plan.name}
             </Dialog.Description>
             <Flex direction="column" gap="3">
                 <label>

@@ -1,6 +1,7 @@
 import {create} from 'zustand';
 import axiosInstance from '../lib/axios';
 import toast from 'react-hot-toast';
+import type { Plan } from './planStore';
 
 type requestForm={
     name:string,
@@ -8,7 +9,7 @@ type requestForm={
     password:string,
     phone:string
     address:string,
-    plan:string,
+    plan_id:number,
 }
 
 export type Request ={
@@ -18,7 +19,7 @@ export type Request ={
     password:string,
     phone:string
     address:string,
-    plan:string,
+    plan:Plan,
     status:string,
     created_at:string,
     updated_at:string
@@ -37,7 +38,9 @@ interface RequestState{
     creatingRequest:boolean,
     pageNumber:number,
     createRequest:(formData:requestForm)=>Promise<Boolean>,
-    getRequests:(page:number)=>Promise<Boolean>
+    getRequests:(page:number)=>Promise<Boolean>,
+    approveRequest:(id:number)=>Promise<Boolean>,
+    rejectRequest:(id:number)=>Promise<Boolean>
 }
 
 export const useRequestStore=create<RequestState>((set)=>({
@@ -61,6 +64,26 @@ export const useRequestStore=create<RequestState>((set)=>({
         try {
             const response =await axiosInstance.get(`/admin/requests?page=${page}`);
             set({requests:response.data.requests});
+            return true;
+        } catch (error:any) {
+            toast.error(error?.response?.data?.message);
+            return false;
+        }
+    },
+    approveRequest:async(id:number)=>{
+        try {
+            const response =await axiosInstance.post(`/admin/request/approve/${id}`);
+            toast.success(response.data.message);
+            return true;
+        } catch (error:any) {
+            toast.error(error?.response?.data?.message);
+            return false;
+        }
+    },
+    rejectRequest:async(id:number)=>{
+        try {
+            const response =await axiosInstance.post(`/admin/request/reject/${id}`);
+            toast.success(response.data.message);
             return true;
         } catch (error:any) {
             toast.error(error?.response?.data?.message);
