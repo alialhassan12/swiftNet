@@ -37,6 +37,9 @@ interface RequestState{
     newRequest:Request | null,
     creatingRequest:boolean,
     pageNumber:number,
+    gettingRequests:boolean,
+    approvingRequest:boolean,
+    rejectingRequest:boolean,
     createRequest:(formData:requestForm)=>Promise<Boolean>,
     getRequests:(page:number)=>Promise<Boolean>,
     approveRequest:(id:number)=>Promise<Boolean>,
@@ -47,6 +50,9 @@ export const useRequestStore=create<RequestState>((set)=>({
     newRequest:null,
     creatingRequest:false,
     requests:null,
+    gettingRequests:false,
+    approvingRequest:false,
+    rejectingRequest:false,
     createRequest:async(formData:requestForm)=>{
         set({creatingRequest:true})
         try {
@@ -61,6 +67,7 @@ export const useRequestStore=create<RequestState>((set)=>({
     },
     pageNumber:1,
     getRequests:async(page:number=1)=>{
+        set({gettingRequests:true});
         try {
             const response =await axiosInstance.get(`/admin/requests?page=${page}`);
             set({requests:response.data.requests});
@@ -68,9 +75,12 @@ export const useRequestStore=create<RequestState>((set)=>({
         } catch (error:any) {
             toast.error(error?.response?.data?.message);
             return false;
+        }finally{
+            set({gettingRequests:false});
         }
     },
     approveRequest:async(id:number)=>{
+        set({approvingRequest:true});
         try {
             const response =await axiosInstance.post(`/admin/request/approve/${id}`);
             toast.success(response.data.message);
@@ -78,9 +88,12 @@ export const useRequestStore=create<RequestState>((set)=>({
         } catch (error:any) {
             toast.error(error?.response?.data?.message);
             return false;
+        }finally{
+            set({approvingRequest:false});
         }
     },
     rejectRequest:async(id:number)=>{
+        set({rejectingRequest:true});
         try {
             const response =await axiosInstance.post(`/admin/request/reject/${id}`);
             toast.success(response.data.message);
@@ -88,6 +101,8 @@ export const useRequestStore=create<RequestState>((set)=>({
         } catch (error:any) {
             toast.error(error?.response?.data?.message);
             return false;
+        }finally{
+            set({rejectingRequest:false});
         }
     }
 }));

@@ -7,6 +7,7 @@ import {
     DialogHeader, 
     DialogTitle 
 } from "@/components/ui/dialog";
+import {Alert,AlertDescription,AlertTitle} from "@/components/ui/alert";
 import { useRequestStore, type Request } from "@/store/requestStore";
 import { 
     User, 
@@ -26,7 +27,7 @@ interface RequestDialogProps {
 }
 
 const InfoRow = ({ icon: Icon, label, value }: { icon: any, label: string, value: string | undefined }) => (
-    <div className="flex items-start gap-3 py-3">
+    <div className="flex items-start gap-3">
         <div className="mt-1 p-2 rounded-lg bg-slate-800/50 text-slate-400">
             <Icon className="w-4 h-4" />
         </div>
@@ -97,7 +98,9 @@ const RequestDialog = ({ request, open, setOpen }: RequestDialogProps) => {
                         Cancel
                     </Button>
                     <div className="flex gap-2 ml-auto">
-                        <Button 
+                        {request?.status=="pending"&&(
+                            <>
+                            <Button 
                             className="bg-rose-600 hover:bg-rose-500 text-white flex items-center gap-2"
                             onClick={()=>rejectRequest(request?.id as number)}>
                             <XCircle className="w-4 h-4" />
@@ -109,6 +112,26 @@ const RequestDialog = ({ request, open, setOpen }: RequestDialogProps) => {
                             <CheckCircle2 className="w-4 h-4" />
                             Approve
                         </Button>
+                            </>
+                        )}
+                        {request?.status === "approved" &&(
+                            <Alert className="bg-emerald-500/10 border-emerald-500/20">
+                                <Info className="w-5 h-5 text-emerald-400" />
+                                <AlertTitle className="text-emerald-400">Approved</AlertTitle>
+                                <AlertDescription className="text-emerald-300">
+                                    This request has been approved.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                        {request?.status === "rejected" &&(
+                            <Alert className="bg-rose-500/10 border-rose-500/20">
+                                <Info className="w-5 h-5 text-rose-400" />
+                                <AlertTitle className="text-rose-400">Rejected</AlertTitle>
+                                <AlertDescription className="text-rose-300">
+                                    This request has been rejected.
+                                </AlertDescription>
+                            </Alert>
+                        )}
                     </div>
                 </DialogFooter>
             </DialogContent>

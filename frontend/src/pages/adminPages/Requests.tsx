@@ -19,7 +19,7 @@ import {
     SelectGroup,
     SelectLabel
 } from "@/components/ui/select";
-
+import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
@@ -48,7 +48,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 const Requests = () => {
-    const {getRequests,requests,pageNumber}=useRequestStore();
+    const {getRequests,requests,pageNumber,gettingRequests}=useRequestStore();
     const [status,setStatus]=useState<string>('all');
     const [openRequestDialog,setOpenRequestDialog]=useState<boolean>(false);
     const [selectedRequest,setSelectedRequest]=useState<Request | null>(null);
@@ -104,7 +104,9 @@ const Requests = () => {
                                     </div>
                                     <span className="text-sm font-medium text-slate-400">{stat.label}</span>
                                 </div>
-                                <div className="text-2xl font-bold text-white">{stat.value}</div>
+                                {gettingRequests?<Skeleton className="w-10 h-8"/>:
+                                    <div className="text-2xl font-bold text-white">{stat.value}</div>
+                                }
                             </div>
                         ))}
                     </div>
@@ -158,22 +160,25 @@ const Requests = () => {
                                     {requests?.data.filter((req)=>status==='all'?true:req.status===status).map((req) => (
                                         <tr key={req.id} className="hover:bg-slate-800/30 transition-colors group">
                                             <td className="px-6 py-4">
-                                                <span className="text-xs font-mono text-slate-500">#{req.id}</span>
+                                                {gettingRequests?<Skeleton className="w-10 h-4"/>:<span className="text-xs font-mono text-slate-500">#{req.id}</span>}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm font-medium text-white group-hover:text-blue-400 transition-colors">{req.name}</span>
-                                                    <span className="text-xs text-slate-500">{req.email}</span>
+                                                    {gettingRequests?<Skeleton className="w-40 h-8"/>:
+                                                    <>
+                                                        <span className="text-sm font-medium text-white group-hover:text-blue-400 transition-colors">{req.name}</span>
+                                                        <span className="text-xs text-slate-500">{req.email}</span>
+                                                    </>}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="text-sm text-slate-300">{req.plan.name}</span>
+                                                {gettingRequests?<Skeleton className="w-20 h-4"/>:<span className="text-sm text-slate-300">{req.plan.name}</span>}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="text-sm text-slate-400">{new Date(req.created_at).toLocaleDateString() }</span>
+                                                {gettingRequests?<Skeleton className="w-20 h-4"/>:<span className="text-sm text-slate-400">{new Date(req.created_at).toLocaleDateString() }</span>}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <StatusBadge status={req.status} />
+                                                {gettingRequests?<Skeleton className="w-20 h-4"/>:<StatusBadge status={req.status} />}
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\RequestStatusMail;
 use App\Models\Client;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class requestController extends Controller
 {
@@ -73,6 +75,7 @@ class requestController extends Controller
             }
             $request->status='rejected';
             $request->save();
+            Mail::to($request->email)->send(new RequestStatusMail($request));
             return response()->json([
                 'status'=>true,
                 'message'=>'Request rejected successfully'
@@ -114,6 +117,7 @@ class requestController extends Controller
                 'address'=>$request->address,
                 'plan_id'=>$request->plan_id,
             ]);
+            Mail::to($request->email)->send(new RequestStatusMail($request));
             return response()->json([
                 'status'=>true,
                 'message'=>'Request approved successfully'
