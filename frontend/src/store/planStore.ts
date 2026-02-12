@@ -33,7 +33,7 @@ export const usePlanStore = create<PlanState>((set) => ({
     },
     getPlans:async()=>{
         try {
-            const response =await axiosInstance.get('/admin/plans');
+            const response =await axiosInstance.get('/plans');
             set((state:PlanState)=>({plans:response.data.plans}));
         } catch (error:any) {
             toast.error(error?.response?.data?.message);

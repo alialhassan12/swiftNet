@@ -33,7 +33,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     adminLogin: async (formData: LoginForm) => {
         try {
             set({ loggingIn: true });
-            const response = await axiosInstance.post("/admin/login", formData);
+            const response = await axiosInstance.post("/login", formData);
             const data = response.data;
             set({ authUser: data.user });
             localStorage.setItem("token", data.token);

@@ -16,7 +16,7 @@ class AuthController extends Controller
             'user'=>$request->user()
         ],200);
     }
-    public function adminLogin(Request $request){
+    public function login(Request $request){
         $request->validate([
             'email'=>'required|email',
             'password'=>'required|min:8'
@@ -28,13 +28,8 @@ class AuthController extends Controller
                 'message'=>'Email or password is incorrect'
             ],401);
         }
-        if($user->role !='admin'){
-            return response()->json([
-                'status'=>false,
-                'message'=>'You are not authorized to login'
-            ],401);
-        }
-        $token=$user->createToken('admin-token')->plainTextToken;
+
+        $token=$user->createToken('user-token')->plainTextToken;
         return response()->json([
             'status'=>true,
             'message'=>'Login successfully',

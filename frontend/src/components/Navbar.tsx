@@ -42,12 +42,12 @@ export default function Navbar(){
         }
         setErrors({email:"",password:""});
         const success = await adminLogin(formData);
-        if(success) navigate("/adminDashboard");
+        if(success) navigate("/Dashboard");
     }
     
     const handlePortalClick=()=>{
         if(authUser){
-            navigate('/adminDashboard');
+            navigate('/Dashboard');
         }else{
             setOpenPortalDialog(true);
         }
