@@ -141,7 +141,7 @@ const ClientManagement=()=>{
                                                 {gettingClients?<Skeleton className="w-20 h-4"/>:<span className="text-sm text-slate-400">{new Date(client.created_at).toLocaleDateString() }</span>}
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <div className="flex items-center justify-end gap-2">
+                                                <div className="flex items-center justify-end gap-6">
                                                     <Button variant="ghost" size="1" className="h-8 w-8 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10"
                                                         >
                                                         <Eye className="w-4 h-4" />

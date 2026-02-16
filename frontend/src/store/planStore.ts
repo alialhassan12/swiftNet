@@ -17,6 +17,8 @@ interface PlanState{
     setPlans: (plans: Plan[]) => void;
     createPlan:(plan:Plan)=>Promise<void>;
     getPlans:()=>Promise<void>;
+    activatePlan:(id:number)=>Promise<void>;
+    deactivatePlan:(id:number)=>Promise<void>;
 }
 
 export const usePlanStore = create<PlanState>((set) => ({
@@ -34,6 +36,24 @@ export const usePlanStore = create<PlanState>((set) => ({
     getPlans:async()=>{
         try {
             const response =await axiosInstance.get('/plans');
+            set((state:PlanState)=>({plans:response.data.plans}));
+        } catch (error:any) {
+            toast.error(error?.response?.data?.message);
+        }
+    },
+    activatePlan:async(id:number)=>{
+        try {
+            const response =await axiosInstance.get(`/admin/plans/activate/${id}`);
+            toast.success(response.data.message);
+            set((state:PlanState)=>({plans:response.data.plans}));
+        } catch (error:any) {
+            toast.error(error?.response?.data?.message);
+        }
+    },
+    deactivatePlan:async(id:number)=>{
+        try {
+            const response =await axiosInstance.get(`/admin/plans/deactivate/${id}`);
+            toast.success(response.data.message);
             set((state:PlanState)=>({plans:response.data.plans}));
         } catch (error:any) {
             toast.error(error?.response?.data?.message);

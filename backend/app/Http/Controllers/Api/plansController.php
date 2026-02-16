@@ -32,4 +32,24 @@ class plansController extends Controller
             'message'=>'Plan created successfully'
         ]);
     }
+    public function deactivatePlan($id){
+        $plan=Plan::where('id',$id)->first();
+        $plan->is_active=false;
+        $plan->save();
+        $plans=Plan::all();
+        return response()->json([
+            'plans'=>$plans,
+            'message'=>"{$plan->name} plan deactivated successfully"
+        ]);
+    }
+    public function activatePlan($id){
+        $plan=Plan::where('id',$id)->first();
+        $plan->is_active=true;
+        $plan->save();
+        $plans=Plan::all();
+        return response()->json([
+            'plans'=>$plans,
+            'message'=>"{$plan->name} plan activated successfully"
+        ]);
+    }
 }

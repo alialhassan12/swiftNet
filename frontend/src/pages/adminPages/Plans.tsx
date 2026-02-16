@@ -31,22 +31,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { usePlanStore } from "@/store/planStore";
-import type { Plan } from "@/store/planStore";
-
-// Mock data for UI design
-const MOCK_PLANS = [
-    { id: 1, name: "Basic Plan", price: "29.99", speed: "50 Mbps", data: "Unlimited", description: "Perfect for casual browsing", is_active: true },
-    { id: 2, name: "Pro Plan", price: "59.99", speed: "200 Mbps", data: "Unlimited", description: "Great for streaming and gaming", is_active: true },
-    { id: 3, name: "Ultra Plan", price: "99.99", speed: "1 Gbps", data: "Unlimited", description: "Ultimate performance for families", is_active: false },
-    { id: 4, name: "Student Lite", price: "19.99", speed: "25 Mbps", data: "100 GB", description: "Affordable data for students", is_active: true },
-];
+import { usePlanStore,type Plan } from "@/store/planStore";
 
 const StatusBadge = ({ is_active }: { is_active: boolean }) => {
     return (
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
             is_active 
-                ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" 
+                ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
                 : "bg-slate-500/10 text-slate-400 border-slate-500/20"
         }`}>
             {is_active ? <Shield className="w-3.5 h-3.5 mr-1" /> : <ShieldOff className="w-3.5 h-3.5 mr-1" />}
@@ -57,7 +48,7 @@ const StatusBadge = ({ is_active }: { is_active: boolean }) => {
 
 const Plans = () => {
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-    const {createPlan,getPlans,plans}=usePlanStore();
+    const {createPlan,getPlans,plans,activatePlan,deactivatePlan}=usePlanStore();
     const [planData,setPlanData]=useState<Plan>({
         name:"",
         price:0,
@@ -78,7 +69,12 @@ const Plans = () => {
         });
         setIsAddDialogOpen(false);
     }
-
+    const handleActivatePlan=async(id:number)=>{
+        await activatePlan(id);
+    }
+    const handleDeactivatePlan=async(id:number)=>{
+        await deactivatePlan(id);
+    }
     useEffect(() => {
         getPlans();
     }, []);
@@ -148,7 +144,7 @@ const Plans = () => {
                     {/* Quick Stats */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {[
-                            { label: "Active Plans", value: "8", icon: Wifi, color: "text-emerald-400", bg: "bg-emerald-400/10" },
+                            { label: "Active Plans", value: plans?.filter((plan:Plan)=>plan.is_active===true).length, icon: Wifi, color: "text-emerald-400", bg: "bg-emerald-400/10" },
                             { label: "Total Subscribers", value: "1,284", icon: Database, color: "text-blue-400", bg: "bg-blue-400/10" },
                             { label: "Avg. Revenue", value: "$45.50", icon: DollarSign, color: "text-purple-400", bg: "bg-purple-400/10" },
                         ].map((stat, i) => (
@@ -193,7 +189,7 @@ const Plans = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/50">
-                                    {plans.map((plan) => (
+                                    {plans?.map((plan) => (
                                         <tr key={plan.id} className="hover:bg-slate-800/30 transition-colors group">
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col">
@@ -223,6 +219,13 @@ const Plans = () => {
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
                                                     <Button variant="ghost" size="icon" 
+                                                        onClick={()=>{
+                                                            if(plan.is_active){
+                                                                handleDeactivatePlan(plan.id as number);
+                                                            }else{
+                                                                handleActivatePlan(plan.id as number);
+                                                            }
+                                                        }}
                                                         className={`h-8 w-8 ${plan.is_active ? 'text-amber-400 hover:text-amber-300 hover:bg-amber-400/10' : 'text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10'}`}
                                                         title={plan.is_active ? "Deactivate Plan" : "Activate Plan"}>
                                                         {plan.is_active ? <ShieldOff className="w-4 h-4" /> : <Shield className="w-4 h-4" />}

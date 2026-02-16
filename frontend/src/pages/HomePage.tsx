@@ -138,7 +138,14 @@ export default function HomePage(){
                 {/* cards */}
                 <div data-aos="fade-up" className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-7xl mx-auto">
                     {plans.map((plan)=>(
-                        <div key={plan.id} className="bg-slate-900/50 backdrop-blur-sm border border-white/10 p-8 rounded-3xl hover:border-blue-500/30 transition duration-300 flex flex-col relative group overflow-hidden">
+                        <div key={plan.id} className={`bg-slate-900/50 backdrop-blur-sm border border-white/10 p-8 rounded-3xl hover:border-blue-500/30 transition duration-300 flex flex-col relative group overflow-hidden ${!plan.is_active ? 'grayscale opacity-75 cursor-not-allowed' : ''}`}>
+                            {!plan.is_active && (
+                                <div className="absolute top-4 right-4 z-20">
+                                    <span className="bg-red-500/20 text-red-400 text-[10px] font-bold px-3 py-1 rounded-full border border-red-500/30 uppercase tracking-widest backdrop-blur-md">
+                                        Deactivated
+                                    </span>
+                                </div>
+                            )}
                             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-16 -mt-16 transition group-hover:bg-blue-500/20"></div>
                                 <h3 className="text-xl font-medium text-gray-300 mb-2">{plan.name}</h3>
                                 <div className="flex items-baseline gap-1 mb-6">
@@ -161,9 +168,18 @@ export default function HomePage(){
                                 </div>
                                 <Dialog.Root open={openPlan === plan.name} onOpenChange={(open)=>setOpenPlan(open ? plan.name : null)}>
                                     <Dialog.Trigger>
-                                        <Button variant="outline" size={"4"} className="w-full cursor-pointer hover:bg-white/5 transition-colors! border-white/20! text-white!">Choose {plan.name}</Button>
+                                        <Button 
+                                            variant="outline" 
+                                            size={"4"} 
+                                            className={`w-full transition-colors! border-white/20! text-white! ${plan.is_active ? 'cursor-pointer hover:bg-white/5' : 'cursor-not-allowed opacity-50'}`}
+                                            disabled={!plan.is_active}
+                                        >
+                                            {plan.is_active ? `Choose ${plan.name}` : 'Currently Unavailable'}
+                                        </Button>
                                     </Dialog.Trigger>
-                                    <RequestForm plan={plan} setOpenSnackBar={()=>setOpenSnackBar(true)} onSuccess={()=>setOpenPlan(null)}/>
+                                    {plan.is_active && (
+                                        <RequestForm plan={plan} setOpenSnackBar={()=>setOpenSnackBar(true)} onSuccess={()=>setOpenPlan(null)}/>
+                                    )}
                                 </Dialog.Root>
                         </div>
                     ))}
