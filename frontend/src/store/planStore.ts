@@ -14,6 +14,7 @@ export type Plan={
 
 interface PlanState{
     plans:Plan[];
+    gettingPlans:boolean;
     setPlans: (plans: Plan[]) => void;
     createPlan:(plan:Plan)=>Promise<void>;
     getPlans:()=>Promise<void>;
@@ -33,12 +34,16 @@ export const usePlanStore = create<PlanState>((set) => ({
             toast.error(error?.response?.data?.message);
         }
     },
+    gettingPlans:false,
     getPlans:async()=>{
+        set({gettingPlans:true});
         try {
             const response =await axiosInstance.get('/plans');
             set((state:PlanState)=>({plans:response.data.plans}));
         } catch (error:any) {
             toast.error(error?.response?.data?.message);
+        } finally{
+            set({gettingPlans:false});
         }
     },
     activatePlan:async(id:number)=>{

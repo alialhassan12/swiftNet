@@ -2,6 +2,7 @@ import { Button, Dialog, Text, TextArea, TextField } from "@radix-ui/themes";
 import CoverageMap from "../components/CoverageMap";
 import Navbar from "../components/Navbar";
 import { Mail, PersonStandingIcon, Send, SendHorizonal, User } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton"
 import Footer from "../components/Footer";
 import RequestForm from "../components/RequestForm";
 import { Alert, Slide, Snackbar } from "@mui/material";
@@ -12,7 +13,7 @@ import { useEffect } from "react";
 export default function HomePage(){
     const [openPlan,setOpenPlan]=useState<string | null>(null);
     const[openSnackBar,setOpenSnackBar]=useState<boolean>(false);
-    const {plans,getPlans}=usePlanStore();
+    const {plans,getPlans,gettingPlans}=usePlanStore();
 
     useEffect(() => {
         getPlans();
@@ -137,8 +138,15 @@ export default function HomePage(){
                 </div>
                 {/* cards */}
                 <div data-aos="fade-up" className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-7xl mx-auto">
-                    {plans.map((plan)=>(
-                        <div key={plan.id} className={`bg-slate-900/50 backdrop-blur-sm border border-white/10 p-8 rounded-3xl hover:border-blue-500/30 transition duration-300 flex flex-col relative group overflow-hidden ${!plan.is_active ? 'grayscale opacity-75 cursor-not-allowed' : ''}`}>
+                    {gettingPlans?(
+                        <>
+                            <Skeleton className="w-full h-[400px] rounded-3xl" />
+                            <Skeleton className="w-full h-[400px] rounded-3xl" />
+                            <Skeleton className="w-full h-[400px] rounded-3xl" />
+                        </>
+                    ):(
+                        plans.map((plan)=>(
+                            <div key={plan.id} className={`bg-slate-900/50 backdrop-blur-sm border border-white/10 p-8 rounded-3xl hover:border-blue-500/30 transition duration-300 flex flex-col relative group overflow-hidden ${!plan.is_active ? 'grayscale opacity-75 cursor-not-allowed' : ''}`}>
                             {!plan.is_active && (
                                 <div className="absolute top-4 right-4 z-20">
                                     <span className="bg-red-500/20 text-red-400 text-[10px] font-bold px-3 py-1 rounded-full border border-red-500/30 uppercase tracking-widest backdrop-blur-md">
@@ -182,7 +190,7 @@ export default function HomePage(){
                                     )}
                                 </Dialog.Root>
                         </div>
-                    ))}
+                    )))}
                 </div>
             </div>
             {/* contact section */}

@@ -27,4 +27,5 @@ Route::middleware('auth:sanctum', 'role:admin')->prefix('admin')->group(function
     Route::get('/plans/activate/{id}', [plansController::class, "activatePlan"])->name('activate-plan');
     //clients routes
     Route::get('/clients', [clientsController::class, 'getClients'])->name('get-clients');
+    Route::post('/clients/updateStatus',[clientsController::class,'changeClientStatus'])->name("change-client-status");
 });

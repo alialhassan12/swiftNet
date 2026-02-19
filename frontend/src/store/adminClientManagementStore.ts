@@ -18,9 +18,11 @@ export type Client={
 
 interface adminClientManagementState{
     clients:Client[],
+    gettingClients:boolean,
+    changingClientStatus:boolean,
     setClients:(clients:Client[])=>void,
     getClients:()=>Promise<boolean>,
-    gettingClients:boolean,
+    changeClientStatus:({client_id,newStatus}:{client_id:number,newStatus:string})=>Promise<void>
 }
 
 export const useAdminClientManagementStore=create<adminClientManagementState>((set)=>({
@@ -38,6 +40,19 @@ export const useAdminClientManagementStore=create<adminClientManagementState>((s
             return false;
         }finally{
             set({gettingClients:false});
+        }
+    },
+    changingClientStatus:false,
+    changeClientStatus:async({client_id,newStatus}:{client_id:number,newStatus:string})=>{
+        set({changingClientStatus:true})
+        try {
+            const response=await axiosInstance.post('/admin/clients/updateStatus',{client_id,newStatus});
+            console.log(response.data.clients);
+            set({clients:response.data.clients});
+        } catch (error:any) {
+            toast.error(error?.response?.data?.message);
+        } finally{
+            set({changingClientStatus:false});
         }
     }
 }))

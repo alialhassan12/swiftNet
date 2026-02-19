@@ -1,8 +1,11 @@
+import ClientDialog from "@/components/adminComponents/ClientDialog";
 import { Input } from "@/components/ui/input";
+import { PopoverContent,Popover, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAdminClientManagementStore, type Client } from "@/store/adminClientManagementStore";
 import { Button, Skeleton } from "@radix-ui/themes";
+
 import { CheckCircle2, Clock, Eye, Filter, GlobeX, MoreVertical, Plus, RadioTower, Search, Users, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -28,11 +31,15 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 const ClientManagement=()=>{
-    const {clients,getClients,gettingClients}=useAdminClientManagementStore();
+    const {clients,getClients,gettingClients,changeClientStatus}=useAdminClientManagementStore();
     useEffect(() => {
         getClients();
     }, [getClients]);
     const [status,setStatus]=useState<string>('all');
+    const [openClientDialog,setOpenClientDialog]=useState<boolean>(false);
+    const [selectedClient,setSelectedClient]=useState<Client|null>(null);
+    const [statusSelectValue,setStatusSelectValue]=useState<string>('');
+
     return(
         <div data-aos="fade-up" className="flex flex-col h-full">
             {/* Header for mobile */}
@@ -143,12 +150,39 @@ const ClientManagement=()=>{
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-6">
                                                     <Button variant="ghost" size="1" className="h-8 w-8 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10"
+                                                        onClick={()=>{
+                                                            setSelectedClient(client);
+                                                            setOpenClientDialog(true);
+                                                        }}
                                                         >
                                                         <Eye className="w-4 h-4" />
                                                     </Button>
-                                                    <Button variant="ghost" size="1" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700">
-                                                        <MoreVertical className="w-4 h-4" />
-                                                    </Button>
+                                                    <Popover>
+                                                        <PopoverTrigger className="p-2 text-slate-400 hover:text-blue-400  hover:bg-blue-400/20 rounded-3xl"
+                                                            onClick={()=>setStatusSelectValue('')}
+                                                        >
+                                                            <MoreVertical className="w-4 h-4" />
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-50">
+                                                            <p className="text-sm mb-2">Edit Status:</p>
+                                                            <Select value={statusSelectValue} onValueChange={(value)=>{
+                                                                setStatusSelectValue(value);
+                                                                changeClientStatus({client_id:client.id,newStatus:value});
+                                                            }}>
+                                                                <SelectTrigger className="w-full">
+                                                                    <SelectValue placeholder="Select a Status"/>
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectGroup>
+                                                                        <SelectLabel>Status</SelectLabel>
+                                                                        <SelectItem value="pending">Pending</SelectItem>
+                                                                        <SelectItem value="active">Active</SelectItem>
+                                                                        <SelectItem value="suspended">Suspended</SelectItem>
+                                                                    </SelectGroup>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </PopoverContent>
+                                                    </Popover>
                                                 </div>
                                             </td>
                                         </tr>
@@ -158,6 +192,7 @@ const ClientManagement=()=>{
                         </div>
                     </div>
                 </div>
+                <ClientDialog open={openClientDialog} setOpen={setOpenClientDialog} selectedClient={selectedClient}/>
             </main>
         </div>
     );
