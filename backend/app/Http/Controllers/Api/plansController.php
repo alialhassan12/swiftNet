@@ -52,4 +52,33 @@ class plansController extends Controller
             'message'=>"{$plan->name} plan activated successfully"
         ]);
     }
+    public function updatePlan(Request $request){
+        $request->validate([
+            'id'=>'required',
+            'name'=>'required',
+            'price'=>'required',
+            'speed'=>'required',
+            'data'=>'required',
+            'description'=>'required',
+        ]);
+        $plan=Plan::where('id',$request->id)->first();
+        $plan->name=$request->name;
+        $plan->price=$request->price;
+        $plan->speed=$request->speed;
+        $plan->data=$request->data;
+        $plan->description=$request->description;
+        $plan->save();
+        return response()->json([
+            'plan'=>$plan,
+            'message'=>"{$plan->name} plan updated successfully"
+        ]);
+    }
+    public function deletePlan($id){
+        $plan=Plan::where('id',$id)->first();
+        $plan->delete();
+        return response()->json([
+            'plan'=>$plan,
+            'message'=>"{$plan->name} plan deleted successfully"
+        ]);
+    }
 }

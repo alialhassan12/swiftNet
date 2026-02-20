@@ -23,8 +23,10 @@ Route::middleware('auth:sanctum', 'role:admin')->prefix('admin')->group(function
     Route::post('/request/approve/{id}', [requestController::class, 'approveRequest'])->name('approve-request{id}');
     //plans routes
     Route::post('/plans', [plansController::class, 'createPlan'])->name('create-plan');
+    Route::put('/plans/updatePlan',[plansController::class,'updatePlan'])->name('update-plan');
     Route::get('/plans/deactivate/{id}', [plansController::class, "deactivatePlan"])->name('deactivate-plan');
     Route::get('/plans/activate/{id}', [plansController::class, "activatePlan"])->name('activate-plan');
+    Route::delete('/plans/deletePlan/{id}',[plansController::class,'deletePlan'])->name('delete-plan');
     //clients routes
     Route::get('/clients', [clientsController::class, 'getClients'])->name('get-clients');
     Route::post('/clients/updateStatus',[clientsController::class,'changeClientStatus'])->name("change-client-status");

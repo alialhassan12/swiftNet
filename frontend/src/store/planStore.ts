@@ -15,23 +15,32 @@ export type Plan={
 interface PlanState{
     plans:Plan[];
     gettingPlans:boolean;
+    creatingPlan:boolean;
+    updatingPlan:boolean;
+    deletingPlan:boolean;
     setPlans: (plans: Plan[]) => void;
     createPlan:(plan:Plan)=>Promise<void>;
+    updatePlan:(plan:Plan)=>Promise<void>;
     getPlans:()=>Promise<void>;
     activatePlan:(id:number)=>Promise<void>;
     deactivatePlan:(id:number)=>Promise<void>;
+    deletePlan:(id:number)=>Promise<void>;
 }
 
 export const usePlanStore = create<PlanState>((set) => ({
     plans: [],
     setPlans: (plans: Plan[]) => set({ plans }),
+    creatingPlan:false,
     createPlan:async(plan:Plan)=>{
+        set({creatingPlan:true});
         try {
             const response =await axiosInstance.post('/admin/plans',plan);
             toast.success(response.data.message);
             set((state:PlanState)=>({plans:[...state.plans,response.data.plan]}));
         } catch (error:any) {
             toast.error(error?.response?.data?.message);
+        } finally{
+            set({creatingPlan:false});
         }
     },
     gettingPlans:false,
@@ -62,6 +71,30 @@ export const usePlanStore = create<PlanState>((set) => ({
             set((state:PlanState)=>({plans:response.data.plans}));
         } catch (error:any) {
             toast.error(error?.response?.data?.message);
+        }
+    },
+    updatingPlan:false,
+    updatePlan:async(plan:Plan)=>{
+        set({updatingPlan:true});
+        try{
+            const response=await axiosInstance.put('/admin/plans/updatePlan',plan);
+            toast.success(response.data.message);
+        }catch(error:any){
+            toast.error(error?.response?.data?.message);
+        } finally{
+            set({updatingPlan:false});
+        }
+    },
+    deletingPlan:false,
+    deletePlan:async(id:number)=>{
+        set({deletingPlan:true});   
+        try{
+            const response=await axiosInstance.delete(`/admin/plans/deletePlan/${id}`);
+            toast.success(response.data.message);
+        }catch(error:any){
+            toast.error(error?.response?.data?.message);
+        }finally{
+            set({deletingPlan:false});   
         }
     }
 }));

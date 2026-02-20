@@ -10,7 +10,8 @@ import {
     DollarSign,
     Shield,
     ShieldOff,
-    Filter
+    Filter,
+    TriangleAlert
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,13 +26,19 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { usePlanStore,type Plan } from "@/store/planStore";
+import PlanUpdateDialog from "@/components/adminComponents/PlanUpdateDialog";
+import { Spinner } from "@/components/ui/spinner";
 
 const StatusBadge = ({ is_active }: { is_active: boolean }) => {
     return (
@@ -48,7 +55,9 @@ const StatusBadge = ({ is_active }: { is_active: boolean }) => {
 
 const Plans = () => {
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-    const {createPlan,getPlans,plans,activatePlan,deactivatePlan}=usePlanStore();
+    const {createPlan,creatingPlan,getPlans,plans,activatePlan,deactivatePlan,deletePlan,deletingPlan}=usePlanStore();
+    const [openUpdateDialog,setOpenUpdateDialog]=useState(false);
+    const [selectedPlan,setSelectedPlan]=useState<Plan|null>(null);
     const [planData,setPlanData]=useState<Plan>({
         name:"",
         price:0,
@@ -74,6 +83,10 @@ const Plans = () => {
     }
     const handleDeactivatePlan=async(id:number)=>{
         await deactivatePlan(id);
+    }
+    const handleDeletePlan=async(id:number)=>{
+        await deletePlan(id);
+        getPlans();
     }
     useEffect(() => {
         getPlans();
@@ -134,7 +147,13 @@ const Plans = () => {
                                     </div>
                                     <DialogFooter>
                                         <Button variant="outline" className="border-slate-700 hover:bg-slate-800" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-                                        <Button className="bg-blue-600 hover:bg-blue-500 text-white" onClick={handleCreatePlan}>Save Plan</Button>
+                                        <Button
+                                            disabled={creatingPlan}
+                                            className="bg-blue-600 hover:bg-blue-500 text-white cursor-pointer" 
+                                            onClick={handleCreatePlan}
+                                        >
+                                            {creatingPlan?<Spinner/>:"Save Plan"}
+                                        </Button>
                                     </DialogFooter>
                                 </DialogContent>
                             </Dialog>
@@ -218,6 +237,7 @@ const Plans = () => {
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
+                                                    {/* activate or deactivate button */}
                                                     <Button variant="ghost" size="icon" 
                                                         onClick={()=>{
                                                             if(plan.is_active){
@@ -230,13 +250,52 @@ const Plans = () => {
                                                         title={plan.is_active ? "Deactivate Plan" : "Activate Plan"}>
                                                         {plan.is_active ? <ShieldOff className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
                                                     </Button>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10">
+                                                    {/* edit plan */}
+                                                    <Button variant="ghost" size="icon" 
+                                                        title="Edit Plan"
+                                                        onClick={()=>{
+                                                            setSelectedPlan(plan);
+                                                            setOpenUpdateDialog(true);
+                                                        }}
+                                                        className="h-8 w-8 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10">
                                                         <Edit2 className="w-4 h-4" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-rose-400 hover:bg-rose-400/10">
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </Button>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700">
+                                                    {/* delete plan */}
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger>
+                                                                <Button variant="ghost" size="icon" 
+                                                                    title="Delete Plan"
+                                                                    className="h-8 w-8 text-slate-400 hover:text-rose-400 hover:bg-rose-400/10">
+                                                                    <Trash2 className="w-4 h-4" />
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle className="flex items-center gap-2 text-rose-400">
+                                                                        <TriangleAlert className="w-5 h-5 text-rose-400" />
+                                                                        Are you absolutely sure?
+                                                                    </AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        This action cannot be undone. This will permanently delete 
+                                                                        <span className="text-white"> {plan.name}</span> plan
+                                                                        from our servers.
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                                                                    <AlertDialogAction 
+                                                                        className="bg-rose-600 hover:bg-rose-700 text-white cursor-pointer"
+                                                                        onClick={()=>handleDeletePlan(plan.id!)}
+                                                                        disabled={deletingPlan}
+                                                                    > {deletingPlan ? <Spinner/>: "Continue"}
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    {/* more Options */}
+                                                    <Button variant="ghost" size="icon" 
+                                                        title="More Options"
+                                                        className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700">
                                                         <MoreVertical className="w-4 h-4" />
                                                     </Button>
                                                 </div>
@@ -248,6 +307,7 @@ const Plans = () => {
                         </div>
                     </div>
                 </div>
+                <PlanUpdateDialog plan={selectedPlan} open={openUpdateDialog} setOpen={setOpenUpdateDialog}></PlanUpdateDialog>
             </main>
         </div>
     );
