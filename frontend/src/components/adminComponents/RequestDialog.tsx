@@ -8,6 +8,7 @@ import {
     DialogTitle 
 } from "@/components/ui/dialog";
 import {Alert,AlertDescription,AlertTitle} from "@/components/ui/alert";
+import { Spinner } from "@/components/ui/spinner"
 import { useRequestStore, type Request } from "@/store/requestStore";
 import { 
     User, 
@@ -39,7 +40,17 @@ const InfoRow = ({ icon: Icon, label, value }: { icon: any, label: string, value
 );
 
 const RequestDialog = ({ request, open, setOpen }: RequestDialogProps) => {
-    const {rejectRequest,approveRequest}=useRequestStore();
+    const {rejectRequest,approveRequest,getRequests,pageNumber,approvingRequest,rejectingRequest}=useRequestStore();
+    const handleApproveRequest=async()=>{
+        await approveRequest(request?.id as number);
+        getRequests(pageNumber);
+        setOpen(false);
+    }
+    const handleRejectRequest=async()=>{
+        await rejectRequest(request?.id as number);
+        getRequests(pageNumber);
+        setOpen(false);
+    }
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[500px] bg-slate-950 border-slate-800 p-0 overflow-hidden">
@@ -101,17 +112,31 @@ const RequestDialog = ({ request, open, setOpen }: RequestDialogProps) => {
                         {request?.status=="pending"&&(
                             <>
                             <Button 
-                            className="bg-rose-600 hover:bg-rose-500 text-white flex items-center gap-2"
-                            onClick={()=>rejectRequest(request?.id as number)}>
-                            <XCircle className="w-4 h-4" />
-                            Reject
-                        </Button>
-                        <Button 
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-2"
-                            onClick={()=>approveRequest(request?.id as number)}>
-                            <CheckCircle2 className="w-4 h-4" />
-                            Approve
-                        </Button>
+                                disabled={rejectingRequest}
+                                className="bg-rose-600 hover:bg-rose-500 text-white flex items-center gap-2"
+                                onClick={handleRejectRequest}
+                            >
+                                {rejectingRequest
+                                    ?<Spinner/>
+                                    :<>  
+                                        <XCircle className="w-4 h-4" />
+                                        Reject
+                                    </>
+                                }
+                            </Button>
+                            <Button 
+                                disabled={approvingRequest}
+                                className="bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-2"
+                                onClick={handleApproveRequest}
+                            >
+                                {approvingRequest
+                                    ?<Spinner/>
+                                    :<>  
+                                        <CheckCircle2 className="w-4 h-4" />
+                                        Approve
+                                    </>
+                                }
+                            </Button>
                             </>
                         )}
                         {request?.status === "approved" &&(

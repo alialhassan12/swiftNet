@@ -78,7 +78,7 @@ class requestController extends Controller
             Mail::to($request->email)->send(new RequestStatusMail($request));
             return response()->json([
                 'status'=>true,
-                'message'=>'Request rejected successfully'
+                'message'=>'Request rejected successfully',
             ]);
         }
         catch(Exception $e){
@@ -120,7 +120,7 @@ class requestController extends Controller
             Mail::to($request->email)->send(new RequestStatusMail($request));
             return response()->json([
                 'status'=>true,
-                'message'=>'Request approved successfully'
+                'message'=>'Request approved successfully',
             ]);
         }catch(Exception $e){
             return response()->json([

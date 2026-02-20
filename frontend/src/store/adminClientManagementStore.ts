@@ -47,7 +47,6 @@ export const useAdminClientManagementStore=create<adminClientManagementState>((s
         set({changingClientStatus:true})
         try {
             const response=await axiosInstance.post('/admin/clients/updateStatus',{client_id,newStatus});
-            console.log(response.data.clients);
             set({clients:response.data.clients});
         } catch (error:any) {
             toast.error(error?.response?.data?.message);
