@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Client;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -27,6 +28,28 @@ class AuthController extends Controller
                 'status'=>false,
                 'message'=>'Email or password is incorrect'
             ],401);
+        }
+        //check if the user is client and if his account is active
+        if($user->role=='client'){
+            $client=Client::where('user_id',$user->id)->first();
+            if($client->status=='suspended'){
+                return response()->json([
+                    'status'=>false,
+                    'message'=>'Your account is suspended'
+                ],401);
+            }
+            if($client->status=='disconnected'){
+                return response()->json([
+                    'status'=>false,
+                    'message'=>'Your account is disconnected'
+                ],401);
+            }
+            if($client->status=='pending'){
+                return response()->json([
+                    'status'=>false,
+                    'message'=>'Your account is pending approval'
+                ],401);
+            }
         }
 
         $token=$user->createToken('user-token')->plainTextToken;

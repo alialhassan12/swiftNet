@@ -82,4 +82,41 @@ class clientsController extends Controller
             ],500);
         }   
     }
+    public function getClientProfile(Request $request){
+        try{
+            $client=Client::with('user','plan')->where('user_id',auth('sanctum')->user()->id)->first();
+            if($client){
+                $client=$client->map(function($client){
+                    return[
+                        'id'=>$client->id,
+                        'user_id'=>$client->user_id,
+                        'name'=>$client->user->name,
+                        'email'=>$client->user->email,
+                        'phone'=>$client->user->phone,
+                        'address'=>$client->address,
+                        'plan_id'=>$client->plan_id,
+                        'plan_name'=>$client->plan->name,
+                        'status'=>$client->status,
+                        'created_at'=>$client->created_at,
+                        'updated_at'=>$client->updated_at
+                    ];
+                });
+                return response()->json([
+                    'status'=>'success',
+                    'message'=>'Client profile fetched successfully',
+                    'data'=>$client
+                ],200);
+            }else{
+                return response()->json([
+                    'status'=>'error',
+                    'message'=>'Client not found',
+                ],404);
+            }
+        }catch(Exception $e){
+            return response()->json([
+                'message'=>'Failed to fetch client profile',
+                'error'=>$e->getMessage()
+            ],500);
+        }
+    }
 }

@@ -39,9 +39,8 @@ export const useAuthStore = create<AuthState>((set) => ({
             localStorage.setItem("token", data.token);
             toast.success("Login successful");
             return true;
-        } catch (error) {
-            
-            toast.error("Invalid credentials");
+        } catch (error:any) {
+            toast.error(error.response.data.message );
             return false;
         } finally {
             set({ loggingIn: false });

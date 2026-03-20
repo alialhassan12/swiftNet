@@ -31,7 +31,7 @@ const menuItems = [
     { title: "Plans", icon: Package, url: "/Dashboard/plans",page:"plans" },
     { title: "Coverage", icon: Map, url: "/Dashboard/coverage",page:"coverage" },
     { title: "Settings", icon: Settings, url: "/Dashboard/settings",page:"settings" },
-]
+];
 
 const AdminSideBar = () => {
     const {logout,loggingOut}=useAuthStore();

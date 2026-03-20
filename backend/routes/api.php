@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\plansController;
 use App\Http\Controllers\Api\requestController;
 use Illuminate\Support\Facades\Route;
 
+
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/createRequest', [requestController::class, 'newRequest'])->name('create-new-request');
 Route::get('/plans', [plansController::class, 'getPlans'])->name('get-plans');
@@ -30,4 +31,9 @@ Route::middleware('auth:sanctum', 'role:admin')->prefix('admin')->group(function
     //clients routes
     Route::get('/clients', [clientsController::class, 'getClients'])->name('get-clients');
     Route::post('/clients/updateStatus',[clientsController::class,'changeClientStatus'])->name("change-client-status");
+});
+
+//client protected routes
+Route::middleware('auth:sanctum', 'role:client','checkActiveUser')->prefix('client')->group(function () {
+    Route::get('/client/profile', [clientsController::class, 'getClientProfile'])->name('get-client-profile');
 });
